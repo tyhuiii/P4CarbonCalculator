@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>我的碳足跡</title>
+<style>
+:root{--green:#2e7d32;--light:#e8f5e9;--border:#e5e8e5}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7f4;color:#203020;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif}
+main{max-width:720px;margin:auto;padding:20px 15px 50px}
+.card{background:#fff;border-radius:20px;padding:22px;margin:14px 0;box-shadow:0 3px 16px #00000010}
+h1{color:var(--green);margin:0 0 8px} h2{margin-top:0}
+.subtitle,.notice{color:#687168;line-height:1.6}
+label.title{display:block;font-weight:700;margin:14px 0 6px}
+input[type=text],textarea,select{width:100%;padding:14px;border:1px solid #d9ddd9;border-radius:12px;font-size:17px;background:#fff}
+textarea{min-height:100px;resize:vertical}
+button{border:0;border-radius:13px;padding:14px 18px;font-size:17px;cursor:pointer}
+.primary{background:var(--green);color:white} .secondary{background:#e7eee8;color:#203020}
+button:disabled{opacity:.45;cursor:not-allowed}
+.item{display:flex;align-items:center;gap:12px;padding:16px 10px;border-bottom:1px solid #eee;font-size:18px}
+.item input{width:25px;height:25px;accent-color:var(--green)}
+.item span{flex:1} .item b{font-size:15px;color:#555}
+.option{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--border);margin:10px 0}
+.option.selected{border-color:var(--green);background:var(--light)}
+.step{display:inline-block;padding:7px 12px;border-radius:999px;background:var(--light);color:var(--green);font-weight:700;margin-bottom:12px}
+.total{text-align:center;background:var(--light);border-radius:18px;padding:16px;margin-top:18px}
+.big{font-size:42px;font-weight:800;color:var(--green)}
+.center{text-align:center}
+.hidden{display:none!important}
+.preview-box{margin-top:16px;text-align:center}
+.preview-box img{max-width:100%;height:auto;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);border:1px solid #ddd;-webkit-touch-callout:default;}
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<h1>🌱 我的碳足跡</h1>
+<p class="subtitle">請同學記錄一天的生活行為，完成 11 題互動活動，最後看看自己的碳足跡是多少。</p>
+</div>
+
+<div class="card" id="studentCard">
+<label class="title">學生姓名 <span style="color:#c62828">＊必填</span></label>
+<input id="student" type="text" placeholder="請輸入姓名">
+<label class="title">班別 <span style="color:#c62828">＊必填</span></label>
+<select id="className">
+  <option value="">請選擇班別</option>
+  <option value="4AN">4AN</option>
+  <option value="4BR">4BR</option>
+  <option value="4CL">4CL</option>
+  <option value="4DS">4DS</option>
+  <option value="4EL">4EL</option>
+</select>
+<label class="title">學號 <span style="color:#c62828">＊必填</span></label>
+<select id="studentId">
+  <option value="">請選擇學號</option>
+</select>
+<p class="notice">姓名、班別及學號全部填寫後，才可以開始活動。</p>
+<button class="primary" id="startBtn" style="width:100%" type="button">開始我的碳足跡活動</button>
+</div>
+
+<div class="card hidden" id="activity">
+<div class="step" id="progress">第 1 題／11 題</div>
+<h2 id="qTitle"></h2>
+<p class="subtitle">今天有做這個行為嗎？</p>
+<div id="qOptions"></div>
+<div class="total">目前累積碳足跡<div class="big" id="runningTotal">0</div>分</div>
+<div style="display:flex;justify-content:space-between;margin-top:16px">
+<button class="secondary hidden" id="prevBtn" type="button">← 上一題</button>
+<button class="primary" id="nextBtn" type="button" disabled>下一題 →</button>
+</div>
+</div>
+
+<div class="card hidden" id="reflection">
+<div class="step">反思活動</div>
+<h2>🔍 哪些行為讓分數特別高？</h2>
+<p class="subtitle">以下是你做過，並會產生「碳足跡」的行為。最多選 3 項。</p>
+<div id="highChoices"></div>
+<p id="highFeedback" class="notice"></p>
+
+<div class="card" style="background:#fafcf9;margin-left:0;margin-right:0">
+<h2>🔄 如果我改變……</h2>
+<p class="notice">選一項你最想改變的高分行為。</p>
+<select id="changeChoice"><option value="">請選擇</option></select>
+<div id="changeResult" class="total hidden"></div>
+</div>
+
+<div class="card" style="background:#fafcf9;margin-left:0;margin-right:0">
+<h2>💡 我的反思</h2>
+<p class="notice">我能為環境做的一件事是甚麼？</p>
+<textarea id="reflectionText" placeholder="寫下你的想法"></textarea>
+</div>
+
+<div class="total">我的碳足跡總分<div class="big" id="finalTotal">0</div>分</div>
+<button class="primary" id="completeBtn" type="button" style="width:100%;margin-top:16px">完成活動</button>
+</div>
+
+<div class="card hidden center" id="finalActions">
+<div class="step">🎉 活動完成</div>
+<h2>你的學習結果圖片已生成！</h2>
+<div id="imagePreview" class="preview-box"></div>
+<button class="primary" id="downloadImgBtn" type="button" style="width:100%;margin-top:16px">下載成果圖片</button>
+<button class="secondary" id="resetBtn" type="button" style="width:100%;margin-top:8px">重新填寫</button>
+<p class="notice" style="margin-top:18px"><strong>📢 最後一步</strong><br>請將生成的圖片下載（iPad/手機用戶可<strong>長按圖片儲存</strong>）後，上載至 <strong>Padlet</strong>。</p>
+</div>
+</main>
+
+<script>
+(function(){
+const itemData=[['搭乘私家車上學',5],['搭乘公共交通工具上學',2],['步行或騎單車',0],['使用一次性塑膠袋',3],['攜帶環保袋',0],['吃牛肉',4],['吃蔬菜或水果',1],['使用冷氣',3],['使用風扇',1],['浪費食物',3],['吃完食物、不浪費',0]];
+let current=0;
+let answers=Array(itemData.length).fill(null);
+let completedRecord=null;
+
+const $=id=>document.getElementById(id);
+const total=()=>answers.reduce((s,a)=>s+(a?a.score:0),0);
+
+// 動態生成學號 1-30 的選項
+const studentIdSelect = $("studentId");
+for(let i=1; i<=30; i++){
+  const opt = document.createElement("option");
+  opt.value = i;
+  opt.textContent = i + " 號";
+  studentIdSelect.appendChild(opt);
+}
+
+function start(){
+  const name=$("student").value.trim(), cls=$("className").value, id=$("studentId").value;
+  if(!name||!cls||!id){alert("請先完整填寫學生姓名、選擇班別及學號。");return;}
+  $("student").readOnly=true;$("className").disabled=true;$("studentId").disabled=true;
+  $("startBtn").classList.add("hidden");
+  $("activity").classList.remove("hidden");
+  current=0;answers=Array(itemData.length).fill(null);
+  render();
+  $("activity").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function render(){
+  const [name,score]=itemData[current], a=answers[current];
+  $("progress").textContent=`第 ${current+1} 題／${itemData.length} 題`;
+  $("qTitle").textContent=`我的一天：${name}`;
+  $("qOptions").innerHTML=
+    `<button type="button" class="option ${a&&a.value===true?"selected":""}" data-v="1">有（${score} 分）</button>
+     <button type="button" class="option ${a&&a.value===false?"selected":""}" data-v="0">沒有（0 分）</button>`;
+  document.querySelectorAll("#qOptions .option").forEach(b=>b.addEventListener("click",()=>select(b.dataset.v==="1")));
+  $("runningTotal").textContent=total();
+  $("prevBtn").classList.toggle("hidden",current===0);
+  $("nextBtn").disabled=a===null;
+  $("nextBtn").textContent=current===itemData.length-1?"進入反思 →":"下一題 →";
+}
+
+function select(value){
+  const [name,score]=itemData[current];
+  answers[current]={name,score:value?score:0,value};
+  render();
+}
+
+$("startBtn").addEventListener("click",start);
+$("nextBtn").addEventListener("click",()=>{
+  if(!answers[current]){alert("請先選擇答案。");return;}
+  if(current<itemData.length-1){current++;render();$("activity").scrollIntoView({behavior:"smooth",block:"start"});}
+  else showReflection();
+});
+$("prevBtn").addEventListener("click",()=>{if(current>0){current--;render();$("activity").scrollIntoView({behavior:"smooth",block:"start"});}});
+
+function updateChangeOptions(){
+  const checkedBoxes=[...document.querySelectorAll(".highChoice:checked")];
+  let html='<option value="">請選擇</option>';
+  checkedBoxes.forEach(cb=>{
+    html+=`<option value="${cb.dataset.name}" data-score="${cb.dataset.score}">${cb.dataset.name}（${cb.dataset.score} 分）</option>`;
+  });
+  $("changeChoice").innerHTML=html;
+  $("changeResult").classList.add("hidden");
+}
+
+function showReflection(){
+  $("activity").classList.add("hidden");
+  $("reflection").classList.remove("hidden");
+  buildReflection();
+  $("reflection").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function buildReflection(){
+  const source=answers.filter(a=>a&&a.value&&a.score>0).sort((a,b)=>b.score-a.score);
+  if(!source.length){
+    $("highChoices").innerHTML='<div class="total"><strong>🎉 太好了！</strong><br>你今天沒有選擇會增加碳足跡分數的行為。</div>';
+  }else{
+    $("highChoices").innerHTML=source.map(a=>`<label class="item"><input type="checkbox" class="highChoice" data-name="${a.name}" data-score="${a.score}"><span>${a.name}</span><b>${a.score} 分</b></label>`).join("");
+    document.querySelectorAll(".highChoice").forEach(x=>x.addEventListener("change",()=>{
+      const c=[...document.querySelectorAll(".highChoice:checked")];
+      if(c.length>3){x.checked=false;alert("最多選 3 項。");return;}
+      $("highFeedback").textContent=c.length?`已選 ${c.length} 項。想一想：哪一項最值得先改變？`:"";
+      updateChangeOptions();
+    }));
+  }
+  updateChangeOptions();
+  $("finalTotal").textContent=total();
+}
+
+$("changeChoice").addEventListener("change",()=>{
+  const o=$("changeChoice").selectedOptions[0], score=Number(o.dataset.score||0);
+  if(!score){$("changeResult").classList.add("hidden");return;}
+  $("changeResult").classList.remove("hidden");
+  $("changeResult").innerHTML=`如果改變「${o.value}」，<br><strong>最多可減少 ${score} 分</strong>。<br>改善後的碳足跡總分：<strong>${Math.max(0,total()-score)} 分</strong>`;
+});
+
+$("completeBtn").addEventListener("click",()=>{
+  const sentence=$("reflectionText").value.trim();
+  if(!sentence){alert("請完成「我的反思」，再按完成活動。");return;}
+  const high=[...document.querySelectorAll(".highChoice:checked")].map(x=>x.dataset.name).join("、");
+  
+  completedRecord={
+    name:$("student").value.trim(),
+    className:$("className").value,
+    studentId:$("studentId").value,
+    score:total(),
+    highBehaviors:high||"無",
+    changeBehavior:$("changeChoice").value||"無",
+    sentence,
+    time:new Date().toLocaleString()
+  };
+
+  generateImage(completedRecord);
+
+  $("reflection").classList.add("hidden");
+  $("finalActions").classList.remove("hidden");
+  $("finalActions").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split('');
+  let line = '';
+  for(let n = 0; n < words.length; n++) {
+    let testLine = line + words[n];
+    let metrics = ctx.measureText(testLine);
+    let testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, y);
+      line = words[n];
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, y);
+  return y;
+}
+
+function generateImage(data){
+  const canvas = document.createElement("canvas");
+  canvas.width = 600;
+  canvas.height = 750;
+  const ctx = canvas.getContext("2d");
+
+  // 背景
+  ctx.fillStyle = "#fafcf9";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 頂部邊框/主題
+  ctx.fillStyle = "#2e7d32";
+  ctx.fillRect(0, 0, canvas.width, 18);
+
+  // 標題
+  ctx.fillStyle = "#2e7d32";
+  ctx.font = "bold 28px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText("🌱 我的碳足跡 — 學習成果卡", 35, 60);
+
+  // 學生個人資料卡
+  ctx.fillStyle = "#e8f5e9";
+  ctx.beginPath();
+  ctx.roundRect(35, 80, 530, 60, 10);
+  ctx.fill();
+
+  ctx.fillStyle = "#203020";
+  ctx.font = "16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText(`學生姓名：${data.name}    班別：${data.className}    學號：${data.studentId}`, 55, 115);
+
+  // 碳足跡總分卡
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "#e5e8e5";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(35, 155, 530, 110, 12);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#687168";
+  ctx.font = "16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText("我的碳足跡總分", 55, 190);
+
+  ctx.fillStyle = "#2e7d32";
+  ctx.font = "bold 46px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText(`${data.score} 分`, 55, 245);
+
+  // 反思活動細節卡
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.roundRect(35, 280, 530, 400, 12);
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = "#2e7d32";
+  ctx.font = "bold 20px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText("🔍 反思活動紀錄", 55, 315);
+
+  ctx.fillStyle = "#203020";
+  ctx.font = "bold 16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText("高分行為：", 55, 355);
+  ctx.font = "16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  let currentY = wrapText(ctx, data.highBehaviors, 140, 355, 400, 24);
+
+  currentY += 35;
+  ctx.font = "bold 16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText("最想改變行為：", 55, currentY);
+  ctx.font = "16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  currentY = wrapText(ctx, data.changeBehavior, 175, currentY, 365, 24);
+
+  currentY += 35;
+  ctx.font = "bold 16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText("💡 我的反思（我能為環境做的一件事）：", 55, currentY);
+  currentY += 28;
+  ctx.font = "16px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillStyle = "#333333";
+  wrapText(ctx, data.sentence, 55, currentY, 490, 26);
+
+  // 底部時間 stamp
+  ctx.fillStyle = "#888888";
+  ctx.font = "13px 'PingFang TC', 'Noto Sans TC', sans-serif";
+  ctx.fillText(`完成時間：${data.time}`, 35, 715);
+
+  // 轉為 Base64 Image 格式，解決 iPad / iOS Safari 無法直接下載 Canvas 的問題
+  const imgUrl = canvas.toDataURL("image/png");
+  const img = document.createElement("img");
+  img.src = imgUrl;
+  img.alt = "我的碳足跡學習成果";
+
+  const imgContainer = $("imagePreview");
+  imgContainer.innerHTML = "";
+  imgContainer.appendChild(img);
+
+  // 下載按鈕（針對 iOS/Safari 增加新分頁開啟機制）
+  $("downloadImgBtn").onclick = function(){
+    const a = document.createElement("a");
+    a.href = imgUrl;
+    a.download = `碳足跡成果_${data.className}_${data.name}.png`;
+    a.target = "_blank"; 
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+}
+
+$("resetBtn").addEventListener("click",()=>location.reload());
+})();
+</script>
+</body>
+</html>
