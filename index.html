@@ -206,7 +206,7 @@ $("downloadBtn").addEventListener("click",()=>{
   const records=JSON.parse(localStorage.getItem("carbonRecords")||"[]");
   if(!records.length){alert("目前沒有完成的成績。");return;}
   const esc=v=>`"${String(v??"").replaceAll('"','""')}"`;
-  let csv="學生姓名,班別,學號,碳足跡總分,高分行為,想改變的行為,最後一句話,完成時間\n";
+  let csv="學生姓名,班別,學號,碳足跡總分,高分行為,想改變的行為,我的反思,完成時間\n";
   records.forEach(r=>csv+=[esc(r.name),esc(r.className),esc(r.studentId),r.score,esc(r.highBehaviors),esc(r.changeBehavior),esc(r.sentence),esc(r.time)].join(",")+"\n");
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="我的碳足跡_成績與反思.csv";a.click();
