@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>我的碳足跡</title>
+<style>
+:root{--green:#2e7d32;--light:#e8f5e9;--border:#e5e8e5}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7f4;color:#203020;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif}
+main{max-width:720px;margin:auto;padding:20px 15px 50px}
+.card{background:#fff;border-radius:20px;padding:22px;margin:14px 0;box-shadow:0 3px 16px #00000010}
+h1{color:var(--green);margin:0 0 8px} h2{margin-top:0}
+.subtitle,.notice{color:#687168;line-height:1.6}
+label.title{display:block;font-weight:700;margin:14px 0 6px}
+input[type=text],textarea,select{width:100%;padding:14px;border:1px solid #d9ddd9;border-radius:12px;font-size:17px;background:#fff}
+textarea{min-height:100px;resize:vertical}
+button{border:0;border-radius:13px;padding:14px 18px;font-size:17px;cursor:pointer}
+.primary{background:var(--green);color:white} .secondary{background:#e7eee8;color:#203020}
+button:disabled{opacity:.45;cursor:not-allowed}
+.item{display:flex;align-items:center;gap:12px;padding:16px 10px;border-bottom:1px solid #eee;font-size:18px}
+.item input{width:25px;height:25px;accent-color:var(--green)}
+.item span{flex:1} .item b{font-size:15px;color:#555}
+.option{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--border);margin:10px 0}
+.option.selected{border-color:var(--green);background:var(--light)}
+.step{display:inline-block;padding:7px 12px;border-radius:999px;background:var(--light);color:var(--green);font-weight:700;margin-bottom:12px}
+.total{text-align:center;background:var(--light);border-radius:18px;padding:16px;margin-top:18px}
+.big{font-size:42px;font-weight:800;color:var(--green)}
+.center{text-align:center}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<h1>🌱 我的碳足跡</h1>
+<p class="subtitle">請同學記錄一天的生活行為，完成 11 題互動活動，最後看看自己的碳足跡是多少。</p>
+</div>
+
+<div class="card" id="studentCard">
+<label class="title">學生姓名 <span style="color:#c62828">＊必填</span></label>
+<input id="student" type="text" placeholder="請輸入姓名">
+<label class="title">班別 <span style="color:#c62828">＊必填</span></label>
+<input id="className" type="text" placeholder="請輸入班別">
+<label class="title">學號 <span style="color:#c62828">＊必填</span></label>
+<input id="studentId" type="text" placeholder="請輸入學號">
+<p class="notice">姓名、班別及學號全部填寫後，才可以開始活動。</p>
+<button class="primary" id="startBtn" style="width:100%" type="button">開始我的碳足跡活動</button>
+</div>
+
+<div class="card hidden" id="activity">
+<div class="step" id="progress">第 1 題／11 題</div>
+<h2 id="qTitle"></h2>
+<p class="subtitle">今天有做這個行為嗎？</p>
+<div id="qOptions"></div>
+<div class="total">目前累積碳足跡<div class="big" id="runningTotal">0</div>分</div>
+<div style="display:flex;justify-content:space-between;margin-top:16px">
+<button class="secondary hidden" id="prevBtn" type="button">← 上一題</button>
+<button class="primary" id="nextBtn" type="button" disabled>下一題 →</button>
+</div>
+</div>
+
+<div class="card hidden" id="reflection">
+<div class="step">反思活動</div>
+<h2>🔍 找出你的高分行為</h2>
+<p class="subtitle">以下選項是根據你剛才「有做」的行為產生的。最多選 3 項。</p>
+<div id="highChoices"></div>
+<p id="highFeedback" class="notice"></p>
+
+<div class="card" style="background:#fafcf9;margin-left:0;margin-right:0">
+<h2>🔄 如果我改變……</h2>
+<p class="notice">選一項你最想改變的高分行為。</p>
+<select id="changeChoice"><option value="">請選擇</option></select>
+<div id="changeResult" class="total hidden"></div>
+</div>
+
+<div class="card" style="background:#fafcf9;margin-left:0;margin-right:0">
+<h2>💡 我的反思</h2>
+<p class="notice">完成句子：我能為環境做的一件事是什麼？</p>
+<textarea id="reflectionText" placeholder="寫下你的想法"></textarea>
+</div>
+
+<div class="total">我的碳足跡總分<div class="big" id="finalTotal">0</div>分</div>
+<button class="primary" id="completeBtn" type="button" style="width:100%;margin-top:16px">完成活動</button>
+</div>
+
+<div class="card hidden center" id="finalActions">
+<div class="step">🎉 活動完成</div>
+<h2>你的資料已完成</h2>
+<div class="total">碳足跡總分<div class="big" id="completedScore">0</div>分</div>
+<button class="primary" id="downloadBtn" type="button" style="width:100%;margin-top:16px">下載成績 CSV</button>
+<button class="secondary" id="resetBtn" type="button" style="width:100%;margin-top:8px">重新填寫</button>
+<p class="notice" style="margin-top:18px"><strong>📢 最後一步</strong><br>請先按「下載成績 CSV」，確認檔案已下載成功，然後把這個 CSV 檔案上載到老師指定的 <strong>Google Classroom</strong> 作業。</p>
+</div>
+</main>
+
+<script>
+(function(){
+const itemData=[['搭乘私家車上學',5],['搭乘公共交通工具上學',2],['步行或騎單車',0],['使用一次性塑膠袋',3],['攜帶環保袋',0],['吃牛肉',4],['吃蔬菜或水果',1],['使用冷氣',3],['使用風扇',1],['浪費食物',3],['吃完食物、不浪費',0]];
+let current=0;
+let answers=Array(itemData.length).fill(null);
+let completed=false;
+
+const $=id=>document.getElementById(id);
+const total=()=>answers.reduce((s,a)=>s+(a?a.score:0),0);
+
+function start(){
+  const name=$("student").value.trim(), cls=$("className").value.trim(), id=$("studentId").value.trim();
+  if(!name||!cls||!id){alert("請先完整填寫學生姓名、班別及學號。");return;}
+  $("student").readOnly=true;$("className").readOnly=true;$("studentId").readOnly=true;
+  $("startBtn").classList.add("hidden");
+  $("activity").classList.remove("hidden");
+  current=0;answers=Array(itemData.length).fill(null);
+  render();
+  $("activity").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function render(){
+  const [name,score]=itemData[current], a=answers[current];
+  $("progress").textContent=`第 ${current+1} 題／${itemData.length} 題`;
+  $("qTitle").textContent=`我的一天：${name}`;
+  $("qOptions").innerHTML=
+    `<button type="button" class="option ${a&&a.value===true?"selected":""}" data-v="1">有（${score} 分）</button>
+     <button type="button" class="option ${a&&a.value===false?"selected":""}" data-v="0">沒有（0 分）</button>`;
+  document.querySelectorAll("#qOptions .option").forEach(b=>b.addEventListener("click",()=>select(b.dataset.v==="1")));
+  $("runningTotal").textContent=total();
+  $("prevBtn").classList.toggle("hidden",current===0);
+  $("nextBtn").disabled=a===null;
+  $("nextBtn").textContent=current===itemData.length-1?"進入反思 →":"下一題 →";
+}
+
+function select(value){
+  const [name,score]=itemData[current];
+  answers[current]={name,score:value?score:0,value};
+  render();
+}
+
+$("startBtn").addEventListener("click",start);
+$("nextBtn").addEventListener("click",()=>{
+  if(!answers[current]){alert("請先選擇答案。");return;}
+  if(current<itemData.length-1){current++;render();$("activity").scrollIntoView({behavior:"smooth",block:"start"});}
+  else showReflection();
+});
+$("prevBtn").addEventListener("click",()=>{if(current>0){current--;render();$("activity").scrollIntoView({behavior:"smooth",block:"start"});}});
+
+function updateChangeOptions(){
+  const checkedBoxes=[...document.querySelectorAll(".highChoice:checked")];
+  let html='<option value="">請選擇</option>';
+  checkedBoxes.forEach(cb=>{
+    html+=`<option value="${cb.dataset.name}" data-score="${cb.dataset.score}">${cb.dataset.name}（${cb.dataset.score} 分）</option>`;
+  });
+  $("changeChoice").innerHTML=html;
+  $("changeResult").classList.add("hidden");
+}
+
+function showReflection(){
+  $("activity").classList.add("hidden");
+  $("reflection").classList.remove("hidden");
+  buildReflection();
+  $("reflection").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function buildReflection(){
+  const source=answers.filter(a=>a&&a.value&&a.score>0).sort((a,b)=>b.score-a.score);
+  if(!source.length){
+    $("highChoices").innerHTML='<div class="total"><strong>🎉 太好了！</strong><br>你今天沒有選擇會增加碳足跡分數的行為。</div>';
+  }else{
+    $("highChoices").innerHTML=source.map(a=>`<label class="item"><input type="checkbox" class="highChoice" data-name="${a.name}" data-score="${a.score}"><span>${a.name}</span><b>${a.score} 分</b></label>`).join("");
+    document.querySelectorAll(".highChoice").forEach(x=>x.addEventListener("change",()=>{
+      const c=[...document.querySelectorAll(".highChoice:checked")];
+      if(c.length>3){x.checked=false;alert("最多選 3 項。");return;}
+      $("highFeedback").textContent=c.length?`已選 ${c.length} 項。想一想：哪一項最值得先改變？`:"";
+      updateChangeOptions();
+    }));
+  }
+  updateChangeOptions();
+  $("finalTotal").textContent=total();
+}
+
+$("changeChoice").addEventListener("change",()=>{
+  const o=$("changeChoice").selectedOptions[0], score=Number(o.dataset.score||0);
+  if(!score){$("changeResult").classList.add("hidden");return;}
+  $("changeResult").classList.remove("hidden");
+  $("changeResult").innerHTML=`如果改變「${o.value}」，<br><strong>最多可減少 ${score} 分</strong>。<br>模擬後：<strong>${Math.max(0,total()-score)} 分</strong>`;
+});
+
+$("completeBtn").addEventListener("click",()=>{
+  const sentence=$("reflectionText").value.trim();
+  if(!sentence){alert("請完成「我的反思」，再按完成活動。");return;}
+  const high=[...document.querySelectorAll(".highChoice:checked")].map(x=>x.dataset.name).join("、");
+  const record={
+    name:$("student").value.trim(),className:$("className").value.trim(),studentId:$("studentId").value.trim(),
+    score:total(),highBehaviors:high,changeBehavior:$("changeChoice").value,
+    sentence,time:new Date().toLocaleString()
+  };
+  const records=JSON.parse(localStorage.getItem("carbonRecords")||"[]");
+  records.push(record);localStorage.setItem("carbonRecords",JSON.stringify(records));
+  completed=true;
+  $("reflection").classList.add("hidden");
+  $("finalActions").classList.remove("hidden");
+  $("completedScore").textContent=record.score;
+  $("finalActions").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+$("downloadBtn").addEventListener("click",()=>{
+  const records=JSON.parse(localStorage.getItem("carbonRecords")||"[]");
+  if(!records.length){alert("目前沒有完成的成績。");return;}
+  const esc=v=>`"${String(v??"").replaceAll('"','""')}"`;
+  let csv="學生姓名,班別,學號,碳足跡總分,高分行為,想改變的行為,最後一句話,完成時間\n";
+  records.forEach(r=>csv+=[esc(r.name),esc(r.className),esc(r.studentId),r.score,esc(r.highBehaviors),esc(r.changeBehavior),esc(r.sentence),esc(r.time)].join(",")+"\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="我的碳足跡_成績與反思.csv";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+
+$("resetBtn").addEventListener("click",()=>location.reload());
+})();
+</script>
+</body>
+</html>
